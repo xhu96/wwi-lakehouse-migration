@@ -1,0 +1,31 @@
+{
+  "description": "Outputs of the legacy rpt.* procedures on SQL Server, used as the reconciliation baseline.",
+  "from_month": "2026-05-01",
+  "to_month": "2026-10-01",
+  "generator": {
+    "start": "2026-05-01",
+    "end": "2026-10-23",
+    "milan_launch": null,
+    "seed": 20260501,
+    "scale": 1.0,
+    "n_test_accounts": 12
+  },
+  "data_fingerprint": "babd956afb197a25cf444ac383ac9c3369b1de16f2af2b9755559d582a68cb73",
+  "rows_loaded": {
+    "zones": 26,
+    "services": 7,
+    "channels": 6,
+    "customers": 1271,
+    "cleaners": 121,
+    "bookings": 7438,
+    "payments": 6495,
+    "reviews": 3156,
+    "marketing_spend": 36
+  },
+  "rows_exported": {
+    "monthly_revenue_by_zone": 95,
+    "booking_status_monthly": 24,
+    "cleaner_monthly": 357,
+    "new_customers_monthly": 36
+  }
+}
