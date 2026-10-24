@@ -1,0 +1,29 @@
+# Databricks Asset Bundle: everything the lakehouse needs, deployed from Git.
+#   databricks bundle deploy -t dev
+#   databricks bundle run ucleany_lakehouse_job -t dev
+bundle:
+  name: ucleany-lakehouse
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog catalog that holds the landing volume and the bronze, silver and gold schemas.
+    default: ucleany_dev
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      catalog: ucleany_dev
+
+  prod:
+    mode: production
+    variables:
+      catalog: ucleany_prod
+    workspace:
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+    run_as:
+      user_name: ${workspace.current_user.userName}

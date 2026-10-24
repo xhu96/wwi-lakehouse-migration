@@ -1,0 +1,22 @@
+resources:
+  pipelines:
+    ucleany_lakehouse_pipeline:
+      name: ucleany-lakehouse
+      catalog: ${var.catalog}
+      schema: silver
+      serverless: true
+      photon: true
+      continuous: false
+      channel: CURRENT
+      libraries:
+        - file:
+            path: ../src/pipelines/bronze.py
+        - file:
+            path: ../src/pipelines/silver.py
+        - file:
+            path: ../src/pipelines/gold.py
+      configuration:
+        ucleany.catalog: ${var.catalog}
+        ucleany.landing_path: /Volumes/${var.catalog}/landing/cdc
+        ucleany.src_path: ${workspace.file_path}/src
+        spark.sql.session.timeZone: UTC
