@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "3fb8fa7362797db5dc6e",
+  "position": {
+    "x": 523.2,
+    "y": 92,
+    "z": 0,
+    "height": 96,
+    "width": 233.6,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Payout per Billed Hour"
+                }
+              },
+              "queryRef": "Metrics.Payout per Billed Hour",
+              "nativeQueryRef": "Payout per Billed Hour"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

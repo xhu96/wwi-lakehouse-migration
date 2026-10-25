@@ -1,0 +1,96 @@
+/// One row per payment record from the provider. Webhook retries are kept but flagged, and only the first row of a transaction counts as cash.
+table Payments
+	lineageTag: 86b581c8-4ca8-5ff4-858b-11f2360b7111
+
+	column 'Payment ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: aca97795-79fe-5fbd-ab28-2c1494d32ef7
+		summarizeBy: none
+		sourceColumn: payment_id
+
+	column 'Booking ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 854d957e-4cc6-5f66-99b6-4c49723c70ad
+		summarizeBy: none
+		sourceColumn: booking_id
+
+	column 'Payment Date Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4a2366e6-8409-5bcd-8bd4-905f35470576
+		summarizeBy: none
+		sourceColumn: date_key
+
+	column 'Service Date'
+		dataType: dateTime
+		isHidden
+		formatString: dd mmm yyyy
+		lineageTag: b86a7958-2507-5979-a82c-a8149901b649
+		summarizeBy: none
+		sourceColumn: service_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Zone ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: abf74d42-4e65-504a-86e0-44ce0c6db9ef
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	/// charge, cancellation_fee or refund (negative).
+	column 'Payment Type'
+		dataType: string
+		lineageTag: a4cc79b6-94a1-5984-9968-63c36d598f8b
+		summarizeBy: none
+		sourceColumn: payment_type
+
+	column Status
+		dataType: string
+		lineageTag: 9cd1bdc1-c8b4-595b-8f7d-5fec82e5dffe
+		summarizeBy: none
+		sourceColumn: status
+
+	/// A repeated delivery of a transaction already recorded. The legacy report summed these.
+	column 'Is Duplicate Webhook'
+		dataType: boolean
+		lineageTag: d7976e40-7bf3-5e78-a885-57a4ceb1fef2
+		summarizeBy: none
+		sourceColumn: is_duplicate
+
+	column 'Counts As Cash'
+		dataType: boolean
+		isHidden
+		lineageTag: 59c766bf-2722-5c2b-a47b-1e855ac3aaec
+		summarizeBy: none
+		sourceColumn: counts_as_cash
+
+	column 'Amount EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: 9d090294-f4ec-541c-9550-1d9daf630899
+		summarizeBy: sum
+		sourceColumn: amount
+
+	column 'Cash EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: 74554ca6-cd08-5b01-8fd1-f2e2a6c6479c
+		summarizeBy: sum
+		sourceColumn: cash_eur
+
+	partition Payments = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "fct_payments", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"payment_id", "booking_id", "date_key", "service_date", "zone_id", "payment_type", "status", "is_duplicate", "counts_as_cash", "amount", "cash_eur"})
+				in
+				    Columns

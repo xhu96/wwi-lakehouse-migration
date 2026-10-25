@@ -1,0 +1,41 @@
+/// Databricks workspace host name, without https://
+expression DatabricksHost = "your-workspace.cloud.databricks.com" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 8716cc7f-40a2-5b37-98eb-0f3cf90b8de7
+
+	annotation PBI_ResultType = Text
+
+/// HTTP path of the SQL warehouse (Connection details tab)
+expression DatabricksHttpPath = "/sql/1.0/warehouses/your-warehouse-id" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 5eeeb632-7bd4-5bf0-8e76-7644f332c348
+
+	annotation PBI_ResultType = Text
+
+/// Unity Catalog catalog: ucleany_dev or ucleany_prod
+expression DatabricksCatalog = "ucleany_dev" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: d9ccb5b3-8d31-5e91-974a-b1f9f962d498
+
+	annotation PBI_ResultType = Text
+
+/// Navigation to the gold schema. Every fact and dimension table starts from here.
+expression Gold =
+		let
+		    Source = Databricks.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, EnableAutomaticProxyDiscovery = null]),
+		    Catalog = Source{[Name = DatabricksCatalog, Kind = "Database"]}[Data],
+		    Schema = Catalog{[Name = "gold", Kind = "Schema"]}[Data]
+		in
+		    Schema
+	lineageTag: 0dc54bed-7a1c-57ac-ae6f-a9fb2120dc32
+
+	annotation PBI_ResultType = Table
+
+/// Navigation to the governance schema (zone entitlements).
+expression Governance =
+		let
+		    Source = Databricks.Catalogs(DatabricksHost, DatabricksHttpPath, [Catalog = null, Database = null, EnableAutomaticProxyDiscovery = null]),
+		    Catalog = Source{[Name = DatabricksCatalog, Kind = "Database"]}[Data],
+		    Schema = Catalog{[Name = "governance", Kind = "Schema"]}[Data]
+		in
+		    Schema
+	lineageTag: bce79f35-96c0-519c-8b9f-a401f10d5c03
+
+	annotation PBI_ResultType = Table

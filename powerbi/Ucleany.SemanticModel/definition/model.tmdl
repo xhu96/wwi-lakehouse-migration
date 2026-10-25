@@ -1,0 +1,31 @@
+model Model
+	culture: en-GB
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["DatabricksHost", "DatabricksHttpPath", "DatabricksCatalog", "Gold", "Governance", "Date", "Zone", "Service", "Channel", "Customer", "Cleaner", "Bookings", "Payments", "Reviews", "Marketing Spend", "Cleaner Monthly", "Cohorts", "Zone Access"]
+
+ref table Date
+ref table Zone
+ref table Service
+ref table Channel
+ref table Customer
+ref table Cleaner
+ref table Bookings
+ref table Payments
+ref table Reviews
+ref table 'Marketing Spend'
+ref table 'Cleaner Monthly'
+ref table Cohorts
+ref table 'Zone Access'
+ref table Metrics
+ref table 'Time Intelligence'
+
+ref role Leadership
+ref role 'Zone Manager'

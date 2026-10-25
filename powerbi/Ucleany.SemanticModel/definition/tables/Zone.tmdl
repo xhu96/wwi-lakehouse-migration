@@ -1,0 +1,40 @@
+/// Operating zones. Rome is split into areas with different demand; zone managers only see their own zones (RLS).
+table Zone
+	lineageTag: ba49e898-b26a-5d85-a72d-eb6fa92f6984
+
+	column 'Zone ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9fda7100-1c20-5fd7-8550-776e14293267
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	column Zone
+		dataType: string
+		lineageTag: 47aabc94-bf03-5f68-a742-1e2cbfb6b28a
+		summarizeBy: none
+		sourceColumn: zone_name
+
+	column City
+		dataType: string
+		lineageTag: e96a57e2-39eb-5ab4-9160-8bb8aee1cb77
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: city
+
+	/// historic_centre, residential_premium, residential or business.
+	column 'Area Type'
+		dataType: string
+		lineageTag: 3fdfabd4-076c-5e62-bacd-eac5a4cda8ee
+		summarizeBy: none
+		sourceColumn: area_type
+
+	partition Zone = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "dim_zone", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"zone_id", "zone_name", "city", "area_type"})
+				in
+				    Columns

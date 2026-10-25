@@ -1,0 +1,127 @@
+/// Customer accounts, SCD type 2: one row per version. No names, emails or phone numbers: those stay in the restricted silver layer.
+table Customer
+	lineageTag: 4ef22c84-8eed-51ef-9a82-4435eb483652
+
+	column 'Customer SK'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 817df663-8163-5d8d-b079-042d8303b2db
+		summarizeBy: none
+		sourceColumn: customer_sk
+
+	column 'Customer ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: af42ceb7-1ae5-5d6d-806b-057b222de3e2
+		summarizeBy: none
+		sourceColumn: customer_id
+
+	/// One person can open two accounts; both point to the same master id. Count people with this, not Customer ID.
+	column 'Master Customer ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: e702988b-7f5d-588a-94a7-bcc0b5396e44
+		summarizeBy: none
+		sourceColumn: master_customer_id
+
+	column 'Is Duplicate Account'
+		dataType: boolean
+		lineageTag: c8f20ec8-5384-5205-ba68-1c119548cc04
+		summarizeBy: none
+		sourceColumn: is_duplicate_account
+
+	/// household, short_let_host or office.
+	column Segment
+		dataType: string
+		lineageTag: 9ac259da-03f6-5a1b-b287-5f6ccc7a2787
+		summarizeBy: none
+		sourceColumn: segment
+
+	column 'Home Zone ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4313997f-8a31-5162-b838-1243d387b3b5
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	column 'Home Zone'
+		dataType: string
+		lineageTag: c3c1a814-7627-55b9-a722-527b9f63c64a
+		summarizeBy: none
+		sourceColumn: zone_name
+
+	column City
+		dataType: string
+		lineageTag: c7091070-36a7-58f7-8fa4-da2e8625f40e
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: city
+
+	column 'Acquisition Channel'
+		dataType: string
+		lineageTag: 1020722c-ff41-5fc8-9149-e3d2682b4f74
+		summarizeBy: none
+		sourceColumn: channel_name
+
+	column 'Signup Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 7edf48e3-5ae9-5151-93be-376bee802832
+		summarizeBy: none
+		sourceColumn: signup_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Email Domain'
+		dataType: string
+		lineageTag: bc9f9b1f-e248-547d-adcd-27c7e02720e8
+		summarizeBy: none
+		sourceColumn: email_domain
+
+	column 'Marketing Opt-in'
+		dataType: boolean
+		lineageTag: 2aea8c8c-2c48-5ce4-a573-4b35882bf9fe
+		summarizeBy: none
+		sourceColumn: marketing_opt_in
+
+	/// True after a GDPR erasure request.
+	column 'Is Erased'
+		dataType: boolean
+		lineageTag: cca80b3e-7e1b-58fe-b051-c66d6504b622
+		summarizeBy: none
+		sourceColumn: is_erased
+
+	column 'Valid From'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: d7b979d5-b996-50ff-abc6-1ecac640c176
+		summarizeBy: none
+		sourceColumn: valid_from
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Valid To'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 0b642c89-398b-5336-b26a-e1167f0206b5
+		summarizeBy: none
+		sourceColumn: valid_to
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Is Current'
+		dataType: boolean
+		lineageTag: 8dada651-b965-5c93-aa57-3ec9d7e02ec4
+		summarizeBy: none
+		sourceColumn: is_current
+
+	partition Customer = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "dim_customer", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"customer_sk", "customer_id", "master_customer_id", "is_duplicate_account", "segment", "zone_id", "zone_name", "city", "channel_name", "signup_date", "email_domain", "marketing_opt_in", "is_erased", "valid_from", "valid_to", "is_current"})
+				in
+				    Columns

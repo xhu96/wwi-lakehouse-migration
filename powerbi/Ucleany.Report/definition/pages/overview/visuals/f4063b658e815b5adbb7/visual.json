@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "f4063b658e815b5adbb7",
+  "position": {
+    "x": 232.0,
+    "y": 92,
+    "z": 0,
+    "height": 96,
+    "width": 192.0,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Platform Revenue"
+                }
+              },
+              "queryRef": "Metrics.Platform Revenue",
+              "nativeQueryRef": "Platform Revenue"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

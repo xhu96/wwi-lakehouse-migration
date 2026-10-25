@@ -1,0 +1,213 @@
+/// One row per booking, including upcoming ones (status confirmed). Amounts are in EUR, VAT included.
+table Bookings
+	lineageTag: c9235df4-2fc8-5991-8fc9-ca8079b1db88
+
+	column 'Booking ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 739956ff-5173-5a27-9e1f-1e96f3547599
+		summarizeBy: none
+		sourceColumn: booking_id
+
+	column 'Service Date'
+		dataType: dateTime
+		isHidden
+		formatString: dd mmm yyyy
+		lineageTag: 50113da5-5fc4-53d4-a8bf-90cae238d810
+		summarizeBy: none
+		sourceColumn: service_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Start time in Rome local time.
+	column 'Scheduled Start'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: ab1e2261-6b31-56b2-ab1e-c84bb0d0372b
+		summarizeBy: none
+		sourceColumn: scheduled_start_local
+
+	column 'Customer SK'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fc805ad0-107f-51de-aac8-5710da6dc23a
+		summarizeBy: none
+		sourceColumn: customer_sk
+
+	column 'Master Customer ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1bddc38e-0f6c-5cf3-bc2c-8926ac79306f
+		summarizeBy: none
+		sourceColumn: master_customer_id
+
+	column 'Cleaner SK'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0ae52d70-be37-56ce-be56-381e7ed41660
+		summarizeBy: none
+		sourceColumn: cleaner_sk
+
+	column 'Cleaner ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3e6de03d-db1b-5cac-a963-a9fe4d174186
+		summarizeBy: none
+		sourceColumn: cleaner_id
+
+	column 'Service ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e4b6b4b3-2fc2-5ac0-920a-f9f92d97489c
+		summarizeBy: none
+		sourceColumn: service_id
+
+	column 'Zone ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a1177ba5-34d5-5dee-8310-7536aa785d28
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	column 'Channel ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8c88c412-4c81-53d7-bcd7-3f4604cb1857
+		summarizeBy: none
+		sourceColumn: channel_id
+
+	/// confirmed, completed, cancelled_by_customer, cancelled_by_cleaner or no_show.
+	column Status
+		dataType: string
+		lineageTag: 372fe792-a8c4-5912-b1df-f48975209aff
+		summarizeBy: none
+		sourceColumn: status
+
+	column 'Is Completed'
+		dataType: boolean
+		isHidden
+		lineageTag: 0e976ef8-5031-5a5b-90ae-3b49d887490e
+		summarizeBy: none
+		sourceColumn: is_completed
+
+	column 'Is Cancelled'
+		dataType: boolean
+		isHidden
+		lineageTag: f0ec9f74-65de-5a23-a3e7-ab00da06e5f3
+		summarizeBy: none
+		sourceColumn: is_cancelled
+
+	column 'Is Charged Cancellation'
+		dataType: boolean
+		isHidden
+		lineageTag: c702d80f-184c-55e5-be73-82ba15247cb3
+		summarizeBy: none
+		sourceColumn: is_charged_cancellation
+
+	column 'Is First Completed Booking'
+		dataType: boolean
+		isHidden
+		lineageTag: c97cd48a-300e-52a5-843f-e7920f773160
+		summarizeBy: none
+		sourceColumn: is_first_completed_booking
+
+	/// none, on_demand, weekly, twice_weekly, biweekly or monthly.
+	column Recurrence
+		dataType: string
+		lineageTag: 15550b7a-a8ee-56b2-897c-6cca4fb71705
+		summarizeBy: none
+		sourceColumn: recurrence
+
+	column 'Promo Code'
+		dataType: string
+		lineageTag: c0b43748-5805-5a43-9a56-34c386a3b857
+		summarizeBy: none
+		sourceColumn: promo_code
+
+	column 'Billed Hours Qty'
+		dataType: decimal
+		isHidden
+		formatString: #,0.0
+		lineageTag: 4f416906-cf26-597c-b8b6-1a4c3fab73bd
+		summarizeBy: sum
+		sourceColumn: billed_hours
+
+	column 'Gross Amount EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: e76f1e41-866a-5b4c-88cf-dbafd52d74be
+		summarizeBy: sum
+		sourceColumn: gross_amount
+
+	column 'Discount Amount EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: 3f857c07-51cb-53e1-9b8a-e6add35bee05
+		summarizeBy: sum
+		sourceColumn: discount_amount
+
+	column 'Net Amount EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: d94a7677-42f1-5d79-9b53-563c132cc37d
+		summarizeBy: sum
+		sourceColumn: net_amount
+
+	column 'Cancellation Fee EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: b3e7615e-9724-5c89-9984-d91d819c2082
+		summarizeBy: sum
+		sourceColumn: cancellation_fee
+
+	column 'Cleaner Payout EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: 266a8b2f-b2b7-54ed-8abd-c7b45de81379
+		summarizeBy: sum
+		sourceColumn: cleaner_payout
+
+	column 'GMV EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: 6c9c52e5-99ac-5195-86d2-8485a74dcd3d
+		summarizeBy: sum
+		sourceColumn: gmv_eur
+
+	column 'Platform Revenue EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: 807fc440-a365-5a34-b534-2fcd4b58884d
+		summarizeBy: sum
+		sourceColumn: platform_revenue_eur
+
+	column 'Lead Time Hours'
+		dataType: decimal
+		isHidden
+		formatString: #,0.0
+		lineageTag: 05d9b7b1-3089-59b3-a330-6cceaec4bce4
+		summarizeBy: none
+		sourceColumn: lead_time_hours
+
+	partition Bookings = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "fct_bookings", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"booking_id", "service_date", "scheduled_start_local", "customer_sk", "master_customer_id", "cleaner_sk", "cleaner_id", "service_id", "zone_id", "channel_id", "status", "is_completed", "is_cancelled", "is_charged_cancellation", "is_first_completed_booking", "recurrence", "promo_code", "billed_hours", "gross_amount", "discount_amount", "net_amount", "cancellation_fee", "cleaner_payout", "gmv_eur", "platform_revenue_eur", "lead_time_hours"})
+				in
+				    Columns

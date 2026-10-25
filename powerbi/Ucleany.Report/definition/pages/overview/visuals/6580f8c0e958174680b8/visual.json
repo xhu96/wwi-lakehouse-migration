@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "6580f8c0e958174680b8",
+  "position": {
+    "x": 648.0,
+    "y": 92,
+    "z": 0,
+    "height": 96,
+    "width": 192.0,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Completed Bookings"
+                }
+              },
+              "queryRef": "Metrics.Completed Bookings",
+              "nativeQueryRef": "Completed Bookings"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

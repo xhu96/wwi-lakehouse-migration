@@ -1,0 +1,232 @@
+/// Every business metric of the model, grouped in display folders. Definitions match the gold KPI tables and docs/data-model.md.
+table Metrics
+	lineageTag: 8f4ee0ed-bf9f-5093-b1ad-0f22f96a181f
+
+	/// All bookings with a service date in the period, upcoming ones included.
+	measure Bookings = COUNTROWS ( Bookings )
+		formatString: #,0
+		displayFolder: Bookings
+		lineageTag: 6425a432-290f-5104-be92-8a04956bb31f
+
+	/// Bookings whose outcome is known: completed, cancelled or no-show. The denominator for rates.
+	measure 'Closed Bookings' = CALCULATE ( [Bookings], KEEPFILTERS ( Bookings[Status] <> "confirmed" ) )
+		formatString: #,0
+		displayFolder: Bookings
+		lineageTag: 1e7aae94-228f-56dd-9172-69ef6e2503a2
+
+	/// Confirmed bookings that have not happened yet: the forward order book.
+	measure 'Upcoming Bookings' = CALCULATE ( [Bookings], KEEPFILTERS ( Bookings[Status] = "confirmed" ) )
+		formatString: #,0
+		displayFolder: Bookings
+		lineageTag: 5be8880a-8d53-5416-abaa-6ec2be08b410
+
+	/// Jobs carried out.
+	measure 'Completed Bookings' = CALCULATE ( [Bookings], KEEPFILTERS ( Bookings[Is Completed] = TRUE () ) )
+		formatString: #,0
+		displayFolder: Bookings
+		lineageTag: a2eda91d-5163-5199-af85-136ede03c4f1
+
+	/// Cancelled by the customer or by the cleaner. No-shows are not cancellations.
+	measure 'Cancelled Bookings' = CALCULATE ( [Bookings], KEEPFILTERS ( Bookings[Is Cancelled] = TRUE () ) )
+		formatString: #,0
+		displayFolder: Bookings
+		lineageTag: a4af0678-cc52-5dc0-8365-f97537d86156
+
+	/// Cancelled bookings over closed bookings.
+	measure 'Cancellation Rate' = DIVIDE ( [Cancelled Bookings], [Closed Bookings] )
+		formatString: 0.0%
+		displayFolder: Bookings
+		lineageTag: 2e5d81c9-2243-5f67-afe4-245c1f23d9c2
+
+	/// Hours charged to customers on completed jobs.
+	measure 'Billed Hours' = SUM ( Bookings[Billed Hours Qty] )
+		formatString: #,0
+		displayFolder: Bookings
+		lineageTag: 8b45503e-6829-5ee5-a17b-e0c46a0f7b4f
+
+	/// Hours between booking and the start of the job, for completed jobs.
+	measure 'Average Lead Time (h)' = CALCULATE ( AVERAGE ( Bookings[Lead Time Hours] ), KEEPFILTERS ( Bookings[Is Completed] = TRUE () ) )
+		formatString: #,0.0
+		displayFolder: Bookings
+		lineageTag: 7b4a1e1c-7fdb-53e7-a69a-9361b79aa12c
+
+	/// Gross merchandise value: what customers paid for completed jobs plus cancellation fees, after discounts.
+	measure GMV = SUM ( Bookings[GMV EUR] )
+		formatString: "€"#,0
+		displayFolder: Revenue
+		lineageTag: d05dfb4d-a527-5249-bcee-9302c8b7a198
+
+	/// GMV minus what is paid to cleaners.
+	measure 'Platform Revenue' = SUM ( Bookings[Platform Revenue EUR] )
+		formatString: "€"#,0
+		displayFolder: Revenue
+		lineageTag: 76caa334-f79b-5d25-9c14-2270adaaf5c3
+
+	/// Share of GMV that Ucleany keeps.
+	measure 'Take Rate' = DIVIDE ( [Platform Revenue], [GMV] )
+		formatString: 0.0%
+		displayFolder: Revenue
+		lineageTag: dacb31a7-3042-515c-8133-285a011d50a6
+
+	/// Paid to cleaners for completed jobs and charged cancellations.
+	measure 'Cleaner Payout' = SUM ( Bookings[Cleaner Payout EUR] )
+		formatString: "€"#,0
+		displayFolder: Revenue
+		lineageTag: 000db4b0-16fb-5022-b437-18ec5eb7777c
+
+	/// Promo code discounts on completed jobs.
+	measure Discounts = CALCULATE ( SUM ( Bookings[Discount Amount EUR] ), KEEPFILTERS ( Bookings[Is Completed] = TRUE () ) )
+		formatString: "€"#,0
+		displayFolder: Revenue
+		lineageTag: 9ec30fd2-4350-5100-9b21-879b686dadce
+
+	/// GMV per completed job.
+	measure 'Average Order Value' = DIVIDE ( [GMV], [Completed Bookings] )
+		formatString: "€"#,0.00
+		displayFolder: Revenue
+		lineageTag: fa1e57fd-1ae4-500c-a06e-fedfa3ca9a03
+
+	/// People with at least one completed job. Duplicate accounts of one person count once.
+	measure 'Active Customers' = CALCULATE ( DISTINCTCOUNT ( Bookings[Master Customer ID] ), KEEPFILTERS ( Bookings[Is Completed] = TRUE () ) )
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: 3a513693-dbd6-5a07-bfea-de7d5ef7c32a
+
+	/// People whose first ever completed job falls in the period.
+	measure 'New Customers' = CALCULATE ( [Bookings], KEEPFILTERS ( Bookings[Is First Completed Booking] = TRUE () ) )
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: 45cc193b-2238-590d-b7d4-f224fe63b5d4
+
+	/// Active customers who had already booked before the period.
+	measure 'Returning Customer Share' = DIVIDE ( [Active Customers] - [New Customers], [Active Customers] )
+		formatString: 0.0%
+		displayFolder: Customers
+		lineageTag: 9adae9e5-41ae-511c-89d8-d2c7706b15f1
+
+	/// Completed jobs per active customer.
+	measure 'Jobs per Active Customer' = DIVIDE ( [Completed Bookings], [Active Customers] )
+		formatString: 0.00
+		displayFolder: Customers
+		lineageTag: ece287fe-f066-58ba-ac5a-0456a683749e
+
+	/// Paid acquisition spend.
+	measure 'Marketing Spend' = SUM ( 'Marketing Spend'[Spend EUR] )
+		formatString: "€"#,0
+		displayFolder: Marketing
+		lineageTag: 7d7b3119-3a55-5968-9d72-f75df63f2169
+
+	/// Blended customer acquisition cost: marketing spend per new customer. By channel, new customers are attributed to the channel that acquired them.
+	measure CAC = DIVIDE ( [Marketing Spend], [New Customers] )
+		formatString: "€"#,0.00
+		displayFolder: Marketing
+		lineageTag: 9fb361ff-fe28-5c4a-82cd-186f3d16244a
+
+	/// Succeeded payments net of refunds, by service date, counting each provider transaction once.
+	measure 'Cash Collected' = SUM ( Payments[Cash EUR] )
+		formatString: "€"#,0
+		displayFolder: Payments
+		lineageTag: 4ce53009-2b3d-5d2b-9fd4-e6ebd1a5abfe
+
+	/// Cash Collected by the date the money moved, for cash-flow views.
+	measure 'Cash Collected (Payment Date)' = CALCULATE ( [Cash Collected], USERELATIONSHIP ( Payments[Payment Date Key], 'Date'[Date Key] ) )
+		formatString: "€"#,0
+		displayFolder: Payments
+		lineageTag: c51e4d7e-e034-57e0-adf5-2a5aaca72c15
+
+	/// Refunded to customers, as a positive amount.
+	measure Refunds = CALCULATE ( - [Cash Collected], KEEPFILTERS ( Payments[Payment Type] = "refund" ) )
+		formatString: "€"#,0
+		displayFolder: Payments
+		lineageTag: 9109005b-bfb1-5122-a594-812c678ba6af
+
+	/// Repeated webhook deliveries. The legacy cash report added this on top of the real cash.
+	measure 'Duplicate Webhook Amount' = CALCULATE ( SUM ( Payments[Amount EUR] ), KEEPFILTERS ( Payments[Is Duplicate Webhook] = TRUE () ), KEEPFILTERS ( Payments[Status] = "succeeded" ) )
+		formatString: "€"#,0.00
+		displayFolder: Payments
+		lineageTag: a8071121-6748-5cc3-953a-2e8438857db7
+
+	/// Valid reviews (rating 1 to 5).
+	measure Reviews = COUNTROWS ( Reviews )
+		formatString: #,0
+		displayFolder: Quality
+		lineageTag: 180c560a-2b84-5a69-bdef-09c094fbeaae
+
+	/// Average of valid ratings. This is the number cleaner bonuses use.
+	measure 'Average Rating' = AVERAGE ( Reviews[Rating] )
+		formatString: 0.00
+		displayFolder: Quality
+		lineageTag: c7312f5f-d6c6-5e32-a856-7154a29612e4
+
+	/// Share of reviews rated 1 or 2.
+	measure 'Detractor Share' = DIVIDE ( CALCULATE ( [Reviews], KEEPFILTERS ( Reviews[Is Detractor] = TRUE () ) ), [Reviews] )
+		formatString: 0.0%
+		displayFolder: Quality
+		lineageTag: 798dc27f-1b29-5a3f-8fce-9b253defd8d9
+
+	/// Reviews per completed job.
+	measure 'Review Rate' = DIVIDE ( [Reviews], [Completed Bookings] )
+		formatString: 0.0%
+		displayFolder: Quality
+		lineageTag: e104d001-8492-56e0-97c2-5ba7ab917a6f
+
+	/// Cleaners with at least one completed job.
+	measure 'Active Cleaners' = CALCULATE ( DISTINCTCOUNT ( Bookings[Cleaner ID] ), KEEPFILTERS ( Bookings[Is Completed] = TRUE () ) )
+		formatString: #,0
+		displayFolder: Cleaners
+		lineageTag: e9e80904-4d74-5111-abbd-0f241872dd98
+
+	/// Hours cleaners made available while active.
+	measure 'Capacity Hours' = SUM ( 'Cleaner Monthly'[Capacity Hours Qty] )
+		formatString: #,0
+		displayFolder: Cleaners
+		lineageTag: 9d4d9fb8-2473-5d79-ba01-9e5c649aeb5c
+
+	/// Billed hours over capacity hours. Below about 60% the cleaner is likely to churn; above 90% the zone needs more cleaners.
+	measure 'Cleaner Utilisation' = DIVIDE ( SUM ( 'Cleaner Monthly'[Billed Hours Qty] ), [Capacity Hours] )
+		formatString: 0.0%
+		displayFolder: Cleaners
+		lineageTag: bac1f3b7-1ace-5e56-93d7-365ef8a0f07f
+
+	/// Average cleaner earnings per billed hour.
+	measure 'Payout per Billed Hour' = DIVIDE ( [Cleaner Payout], [Billed Hours] )
+		formatString: "€"#,0.00
+		displayFolder: Cleaners
+		lineageTag: a6cc1365-f2f6-5387-a6b9-9b23161b6d6d
+
+	/// Customers of the cohort with a completed job in that month.
+	measure 'Cohort Customers' = SUM ( Cohorts[Active Customers Qty] )
+		formatString: #,0
+		displayFolder: Retention
+		lineageTag: 0b64520c-cdd3-5e25-819c-a2c9ae43b28d
+
+	/// Customers in the cohort. Cohorts too young to have reached the selected month are left out.
+	measure 'Cohort Size' =
+			SUMX (
+			    VALUES ( Cohorts[Cohort Month] ),
+			    CALCULATE ( MAX ( Cohorts[Cohort Size Qty] ) )
+			)
+		formatString: #,0
+		displayFolder: Retention
+		lineageTag: ca9beb89-436a-5f9e-a54a-119b3109d17c
+
+	/// Share of a cohort still booking N months after their first job. Shown only for a single month offset.
+	measure 'Retention Rate' =
+			IF (
+			    HASONEVALUE ( Cohorts[Months Since First Booking] ),
+			    DIVIDE ( [Cohort Customers], [Cohort Size] )
+			)
+		formatString: 0.0%
+		displayFolder: Retention
+		lineageTag: 24007ffd-e7e2-55ee-969e-70530a37b372
+
+	column Value
+		isHidden
+		lineageTag: e18f580e-6def-5c88-aab9-20b1ff491756
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+	partition Metrics = calculated
+		mode: import
+		source = { BLANK () }

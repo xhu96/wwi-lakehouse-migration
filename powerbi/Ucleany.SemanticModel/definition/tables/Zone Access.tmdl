@@ -1,0 +1,27 @@
+/// Which zones each zone manager may see. Loaded from the governance schema, the same table that drives the Unity Catalog row filter.
+table 'Zone Access'
+	lineageTag: 3f86e08a-e007-5d1f-992c-78f3bac817fc
+
+	column 'User Email'
+		dataType: string
+		isHidden
+		lineageTag: e6bcd946-c55f-5ef8-b879-9cfaf569e5c3
+		summarizeBy: none
+		sourceColumn: user_email
+
+	column 'Zone ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c8efc403-2ebf-5ad9-ba3a-fb80d5dcdbaa
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	partition 'Zone Access' = m
+		mode: import
+		source =
+				let
+				    Source = Governance{[Name = "zone_access", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"user_email", "zone_id"})
+				in
+				    Columns

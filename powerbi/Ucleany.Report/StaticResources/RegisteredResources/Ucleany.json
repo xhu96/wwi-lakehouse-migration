@@ -1,0 +1,34 @@
+{
+  "name": "Ucleany",
+  "dataColors": [
+    "#0F766E",
+    "#F59E0B",
+    "#6366F1",
+    "#14B8A6",
+    "#EF4444",
+    "#64748B",
+    "#84CC16",
+    "#EC4899"
+  ],
+  "foreground": "#0F3D3A",
+  "background": "#FFFFFF",
+  "tableAccent": "#0F766E",
+  "good": "#0F766E",
+  "neutral": "#F59E0B",
+  "bad": "#EF4444",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "color": "#0F3D3A"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "color": "#0F3D3A",
+      "fontSize": 24
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "color": "#5B6B6A"
+    }
+  }
+}

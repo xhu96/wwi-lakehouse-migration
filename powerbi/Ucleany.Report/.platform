@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Ucleany"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3c5e2a1f-8f0b-4d8e-9a57-1b2f6c7d8e90"
+  }
+}

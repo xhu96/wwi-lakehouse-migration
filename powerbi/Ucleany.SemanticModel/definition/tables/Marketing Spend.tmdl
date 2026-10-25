@@ -1,0 +1,45 @@
+/// Monthly paid acquisition spend by city and channel, from the finance ledger.
+table 'Marketing Spend'
+	lineageTag: f84ea720-c12d-5de6-abfc-2ad70ba3a613
+
+	column 'Month Start'
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: e1a275db-d5a3-549d-b43d-578c729c420b
+		summarizeBy: none
+		sourceColumn: month_start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column City
+		dataType: string
+		lineageTag: e8a0334a-c89e-5ea5-8349-042601269025
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: city
+
+	column 'Channel ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4850d437-7e37-5f87-838d-e4ac546cd8cb
+		summarizeBy: none
+		sourceColumn: channel_id
+
+	column 'Spend EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: 23770ce0-3883-58cb-9914-1e203755838b
+		summarizeBy: sum
+		sourceColumn: spend_eur
+
+	partition 'Marketing Spend' = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "fct_marketing_spend", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"month_start", "city", "channel_id", "spend_eur"})
+				in
+				    Columns

@@ -1,0 +1,68 @@
+relationship 6385afcb-f179-59de-ae06-0d12ff954740
+	fromColumn: Bookings.'Service Date'
+	toColumn: Date.Date
+
+relationship 4ebf9f0e-2cf1-53d9-95ea-453c51cf8e97
+	fromColumn: Bookings.'Customer SK'
+	toColumn: Customer.'Customer SK'
+
+relationship 5a035378-de87-57bf-9b96-de0ab7d04b0c
+	fromColumn: Bookings.'Cleaner SK'
+	toColumn: Cleaner.'Cleaner SK'
+
+relationship 5428b2ee-c879-5d4e-bb93-26cc6eae5513
+	fromColumn: Bookings.'Service ID'
+	toColumn: Service.'Service ID'
+
+relationship d1242fa3-b695-5979-8ba7-0c788bd4faef
+	fromColumn: Bookings.'Zone ID'
+	toColumn: Zone.'Zone ID'
+
+relationship b95d591f-75e2-51e3-868f-dcf79b61a807
+	fromColumn: Bookings.'Channel ID'
+	toColumn: Channel.'Channel ID'
+
+relationship e450f804-2a9c-5550-b90b-4e97cfcaa445
+	fromColumn: Payments.'Service Date'
+	toColumn: Date.Date
+
+relationship 9b2de85b-32a3-5d1b-8594-46aa50844b64
+	isActive: false
+	fromColumn: Payments.'Payment Date Key'
+	toColumn: Date.'Date Key'
+
+relationship 1a27a113-6769-5ade-a28f-2616377cc17e
+	fromColumn: Payments.'Zone ID'
+	toColumn: Zone.'Zone ID'
+
+relationship 6499c1f8-119d-56f4-874f-9069ff78e448
+	fromColumn: Reviews.'Service Date'
+	toColumn: Date.Date
+
+relationship 2db41021-0aba-5533-b796-e72651e5da53
+	fromColumn: Reviews.'Cleaner SK'
+	toColumn: Cleaner.'Cleaner SK'
+
+relationship c7d822fd-976a-5e9c-965e-a7116f0ff003
+	fromColumn: Reviews.'Zone ID'
+	toColumn: Zone.'Zone ID'
+
+relationship d5a6c45b-14ab-5650-a2a7-19bf537b2027
+	fromColumn: Reviews.'Service ID'
+	toColumn: Service.'Service ID'
+
+relationship 81167f6e-3af1-5b3b-82af-2bfaf34f0a13
+	fromColumn: 'Marketing Spend'.'Month Start'
+	toColumn: Date.Date
+
+relationship 120cf6b2-7dcb-535a-83b4-6d5ba4b01328
+	fromColumn: 'Marketing Spend'.'Channel ID'
+	toColumn: Channel.'Channel ID'
+
+relationship 581cb1f4-b7cb-5ada-a479-f4fe07f2d027
+	fromColumn: 'Cleaner Monthly'.'Month Start'
+	toColumn: Date.Date
+
+relationship 34db7761-7cdd-55f1-9ba4-8a5a7ad610c0
+	fromColumn: 'Cleaner Monthly'.'Zone Name'
+	toColumn: Zone.Zone

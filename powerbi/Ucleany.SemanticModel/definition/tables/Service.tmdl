@@ -1,0 +1,60 @@
+/// Service catalogue with the current list price and the hourly rate paid to the cleaner.
+table Service
+	lineageTag: 18f7a4f8-4b14-5528-a523-90046ef6f7c8
+
+	column 'Service ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b861b632-37d6-562f-93cc-f3b285a39ec0
+		summarizeBy: none
+		sourceColumn: service_id
+
+	column 'Service Code'
+		dataType: string
+		lineageTag: 5be83492-b62e-5335-adec-94a66936b413
+		summarizeBy: none
+		sourceColumn: service_code
+
+	column Service
+		dataType: string
+		lineageTag: be2a1dee-3ea1-58a4-bd0f-6daf297e7865
+		summarizeBy: none
+		sourceColumn: service_name
+
+	/// hourly, or flat for short-let turnovers.
+	column 'Pricing Model'
+		dataType: string
+		lineageTag: 3e450013-d4df-5220-a19d-42b86eaeece0
+		summarizeBy: none
+		sourceColumn: pricing_model
+
+	column 'List Price'
+		dataType: decimal
+		formatString: "€"#,0.00
+		lineageTag: 425fffa4-ac3e-510e-a60c-9bd630f13da3
+		summarizeBy: none
+		sourceColumn: list_price_eur
+
+	column 'Minimum Hours'
+		dataType: decimal
+		formatString: 0.0
+		lineageTag: 13789aeb-fa4a-5e75-8a61-033bf40697f7
+		summarizeBy: none
+		sourceColumn: min_hours
+
+	column 'Cleaner Rate'
+		dataType: decimal
+		formatString: "€"#,0.00
+		lineageTag: 698d4e8b-535d-578e-880b-e229a113aec9
+		summarizeBy: none
+		sourceColumn: cleaner_rate_eur
+
+	partition Service = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "dim_service", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"service_id", "service_code", "service_name", "pricing_model", "list_price_eur", "min_hours", "cleaner_rate_eur"})
+				in
+				    Columns

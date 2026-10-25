@@ -1,0 +1,88 @@
+/// Cleaner x month: hours worked against the capacity offered while active. Monthly grain, so filter it by month rather than by day.
+table 'Cleaner Monthly'
+	lineageTag: f93548e7-fbdd-5d2c-85f6-b09ef25cdcfd
+
+	column 'Month Start'
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: bc1484dd-7889-5251-a5a9-ad14503a97fc
+		summarizeBy: none
+		sourceColumn: month_start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Cleaner ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 66bb803a-d5f9-5c45-974b-91c2a386a367
+		summarizeBy: none
+		sourceColumn: cleaner_id
+
+	column Cleaner
+		dataType: string
+		lineageTag: 1ffbedc9-2442-5f6f-8424-ee7c0ad8b592
+		summarizeBy: none
+		sourceColumn: cleaner_display_name
+
+	column 'Zone Name'
+		dataType: string
+		isHidden
+		lineageTag: e2e7345c-f4f8-537b-895a-94a32584dab4
+		summarizeBy: none
+		sourceColumn: zone_name
+
+	column Level
+		dataType: string
+		lineageTag: 6a3c2d27-013a-5308-80c7-442ceefef587
+		summarizeBy: none
+		sourceColumn: level
+
+	column 'Active Days'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d53b3c0a-1d34-58ae-9955-583387e4dfa6
+		summarizeBy: sum
+		sourceColumn: active_days
+
+	column 'Capacity Hours Qty'
+		dataType: decimal
+		isHidden
+		formatString: #,0.0
+		lineageTag: 2efa8b0b-bb54-549b-91fd-88c11bcb942e
+		summarizeBy: sum
+		sourceColumn: capacity_hours
+
+	column 'Completed Bookings Qty'
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 43a2f4f3-566c-54f3-bb0c-922e8973f57a
+		summarizeBy: sum
+		sourceColumn: completed_bookings
+
+	column 'Billed Hours Qty'
+		dataType: decimal
+		isHidden
+		formatString: #,0.0
+		lineageTag: f052f8f1-ad38-55f7-a8c8-c3507100eb9f
+		summarizeBy: sum
+		sourceColumn: billed_hours
+
+	column 'Cleaner Payout EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: eb88a884-5031-5538-b2eb-03872d365fa7
+		summarizeBy: sum
+		sourceColumn: cleaner_payout_eur
+
+	partition 'Cleaner Monthly' = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "agg_cleaner_monthly", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"month_start", "cleaner_id", "cleaner_display_name", "zone_name", "level", "active_days", "capacity_hours", "completed_bookings", "billed_hours", "cleaner_payout_eur"})
+				in
+				    Columns

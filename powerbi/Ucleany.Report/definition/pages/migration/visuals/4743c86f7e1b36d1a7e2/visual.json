@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "4743c86f7e1b36d1a7e2",
+  "position": {
+    "x": 336.0,
+    "y": 92,
+    "z": 0,
+    "height": 96,
+    "width": 296.0,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Duplicate Webhook Amount"
+                }
+              },
+              "queryRef": "Metrics.Duplicate Webhook Amount",
+              "nativeQueryRef": "Duplicate Webhook Amount"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

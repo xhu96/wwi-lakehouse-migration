@@ -1,0 +1,63 @@
+/// Time intelligence for any measure: put Period on columns or in a slicer.
+table 'Time Intelligence'
+	lineageTag: 9ccb2fdd-89b1-53f7-b79e-3c023fe14b78
+
+	calculationGroup
+		precedence: 10
+
+		calculationItem Current = SELECTEDMEASURE ()
+			ordinal: 0
+
+		calculationItem MTD = CALCULATE ( SELECTEDMEASURE (), DATESMTD ( 'Date'[Date] ) )
+			ordinal: 1
+
+		calculationItem YTD = CALCULATE ( SELECTEDMEASURE (), DATESYTD ( 'Date'[Date] ) )
+			ordinal: 2
+
+		calculationItem 'Previous Month' = CALCULATE ( SELECTEDMEASURE (), DATEADD ( 'Date'[Date], -1, MONTH ) )
+			ordinal: 3
+
+		calculationItem 'MoM Change' =
+				VAR CurrentValue = SELECTEDMEASURE ()
+				VAR PreviousValue =
+				    CALCULATE ( SELECTEDMEASURE (), DATEADD ( 'Date'[Date], -1, MONTH ) )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( CurrentValue ) && NOT ISBLANK ( PreviousValue ),
+				        CurrentValue - PreviousValue
+				    )
+			ordinal: 4
+
+		calculationItem 'MoM %' =
+				VAR CurrentValue = SELECTEDMEASURE ()
+				VAR PreviousValue =
+				    CALCULATE ( SELECTEDMEASURE (), DATEADD ( 'Date'[Date], -1, MONTH ) )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( CurrentValue ),
+				        DIVIDE ( CurrentValue - PreviousValue, PreviousValue )
+				    )
+			ordinal: 5
+			formatStringDefinition = "0.0%"
+
+		calculationItem 'Rolling 3M' =
+				CALCULATE (
+				    SELECTEDMEASURE (),
+				    DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -3, MONTH )
+				)
+			ordinal: 6
+
+	column Period
+		dataType: string
+		lineageTag: 9fd76ba8-47d9-561d-ba97-a9905a05476a
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: 'Period Order'
+
+	column 'Period Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fe07d797-9328-5166-a01d-871f0d990a8c
+		summarizeBy: none
+		sourceColumn: Ordinal

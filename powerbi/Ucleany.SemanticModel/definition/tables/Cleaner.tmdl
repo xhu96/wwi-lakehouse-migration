@@ -1,0 +1,110 @@
+/// Cleaners, SCD type 2. A booking points to the version valid on the day of the job, so level and zone are historically correct.
+table Cleaner
+	lineageTag: 467efa39-69d3-552a-8ddb-b7eff8f86991
+
+	column 'Cleaner SK'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 044ae50f-1f6e-5c25-b8e0-2289d8ffefb4
+		summarizeBy: none
+		sourceColumn: cleaner_sk
+
+	column 'Cleaner ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 2cdc44ed-f0a3-534d-b25a-ccf63ca9630c
+		summarizeBy: none
+		sourceColumn: cleaner_id
+
+	/// First name and initial, as shown in the app.
+	column Cleaner
+		dataType: string
+		lineageTag: 9afe84e8-b4f5-53a4-8eb4-6aa40240d0b6
+		summarizeBy: none
+		sourceColumn: cleaner_display_name
+
+	column 'Base Zone ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 22c7504d-ae9f-51b3-af39-ee283bb89c08
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	column 'Base Zone'
+		dataType: string
+		lineageTag: 0d7e2ad5-b720-5d07-826c-32bd7a963fa5
+		summarizeBy: none
+		sourceColumn: zone_name
+
+	column 'Contract Type'
+		dataType: string
+		lineageTag: 3619e55a-22c8-54df-8255-a638349c81ef
+		summarizeBy: none
+		sourceColumn: contract_type
+
+	/// standard, senior or top. Drives the payout rate.
+	column Level
+		dataType: string
+		lineageTag: c989d3e8-fc2f-533f-9183-97a9715e5530
+		summarizeBy: none
+		sourceColumn: level
+
+	column 'Weekly Capacity Hours'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6df6bce3-84eb-5f1c-bda3-cbe19223c49b
+		summarizeBy: none
+		sourceColumn: weekly_capacity_hours
+
+	column 'Onboarded Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: bd4c9216-80f5-5cfd-b308-cb1622197c28
+		summarizeBy: none
+		sourceColumn: onboarded_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Offboarded Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 8c521738-9ab0-5272-8ea1-37932ac8c971
+		summarizeBy: none
+		sourceColumn: offboarded_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Valid From'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 3d06b2ce-31a4-5bd0-bdcd-36284a73d8a7
+		summarizeBy: none
+		sourceColumn: valid_from
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Valid To'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: ab32cb4e-2caa-571a-8baf-bb511120104b
+		summarizeBy: none
+		sourceColumn: valid_to
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Is Current'
+		dataType: boolean
+		lineageTag: cbed4930-992c-5db5-95ae-2279b37688d9
+		summarizeBy: none
+		sourceColumn: is_current
+
+	partition Cleaner = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "dim_cleaner", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"cleaner_sk", "cleaner_id", "cleaner_display_name", "zone_id", "zone_name", "contract_type", "level", "weekly_capacity_hours", "onboarded_date", "offboarded_date", "valid_from", "valid_to", "is_current"})
+				in
+				    Columns

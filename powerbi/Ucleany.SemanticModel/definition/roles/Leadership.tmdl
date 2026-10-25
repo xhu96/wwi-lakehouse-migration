@@ -1,0 +1,5 @@
+/// Founders and finance: every zone.
+role Leadership
+	modelPermission: read
+
+	annotation PBI_Id = 98ca0a6730d45f108118e0402ee516d4

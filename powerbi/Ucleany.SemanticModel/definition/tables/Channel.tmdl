@@ -1,0 +1,38 @@
+/// Acquisition channels. Bookings carry the channel that acquired the customer.
+table Channel
+	lineageTag: 0c731b21-3e0f-5f1e-960b-d2a15492c021
+
+	column 'Channel ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 91471ff6-6eb1-50ff-98fa-9932759d3be7
+		summarizeBy: none
+		sourceColumn: channel_id
+
+	column 'Channel Code'
+		dataType: string
+		lineageTag: 79944d2a-a4a4-5480-8069-1142b6bc0b36
+		summarizeBy: none
+		sourceColumn: channel_code
+
+	column Channel
+		dataType: string
+		lineageTag: ba720c53-23a2-5c57-aa8a-d7b3b28e3011
+		summarizeBy: none
+		sourceColumn: channel_name
+
+	column 'Is Paid'
+		dataType: boolean
+		lineageTag: 988fe09b-ff9b-5386-a627-487f5470d4e8
+		summarizeBy: none
+		sourceColumn: is_paid
+
+	partition Channel = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "dim_channel", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"channel_id", "channel_code", "channel_name", "is_paid"})
+				in
+				    Columns

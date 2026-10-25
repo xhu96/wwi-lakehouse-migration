@@ -1,0 +1,14 @@
+/// Zone managers: only the zones assigned to them in governance.zone_access.
+role 'Zone Manager'
+	modelPermission: read
+
+	tablePermission Zone =
+			Zone[Zone ID]
+			    IN CALCULATETABLE (
+			        VALUES ( 'Zone Access'[Zone ID] ),
+			        'Zone Access'[User Email] = USERPRINCIPALNAME ()
+			    )
+
+	tablePermission 'Zone Access' = 'Zone Access'[User Email] = USERPRINCIPALNAME ()
+
+	annotation PBI_Id = c5616f3c34a85be5af41f2543dd62c5f

@@ -1,0 +1,143 @@
+/// Calendar, one row per day in Europe/Rome time. Marked as the model's date table; every fact joins it on its service date.
+table Date
+	lineageTag: f731abd3-0d0d-5729-958a-3dbbde83ecf0
+	dataCategory: Time
+
+	column 'Date Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e7ae889a-c6ca-5628-8767-be4318c5ca9b
+		summarizeBy: none
+		sourceColumn: date_key
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: dd mmm yyyy
+		lineageTag: 9b7baadd-bf93-5987-9bc2-23ad9b784e3e
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 8c173b3c-2a53-597c-a400-6e2b1a0b187e
+		summarizeBy: none
+		sourceColumn: year
+
+	column Quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: d1cbbe47-d82c-50d4-a3fa-bb83f5e3615b
+		summarizeBy: none
+		sourceColumn: quarter
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fecb9251-c311-5abe-bc5c-38d5b2af7751
+		summarizeBy: none
+		sourceColumn: month
+
+	/// First day of the month. Use it on chart axes for a continuous monthly trend.
+	column 'Month Start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: 908e9c05-9dfe-5d7f-8bbd-24bcb02661bf
+		summarizeBy: none
+		sourceColumn: month_start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Month label, for example 2026-10.
+	column 'Year Month'
+		dataType: string
+		lineageTag: 37c2cb1f-4e1e-5510-b6a0-1f45dd330727
+		summarizeBy: none
+		sourceColumn: year_month
+		sortByColumn: 'Month Start'
+
+	/// Italian month name, as used in the Rome operations team's reports.
+	column 'Month Name'
+		dataType: string
+		lineageTag: 0b8c20ef-1c59-5fd6-ad07-e10db007b578
+		summarizeBy: none
+		sourceColumn: month_name_it
+		sortByColumn: 'Month Number'
+
+	column 'ISO Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: 510f704f-10a4-5a87-96e3-e47911aa205e
+		summarizeBy: none
+		sourceColumn: iso_week
+
+	/// Monday of the ISO week.
+	column 'Week Start'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 3ca1dff6-3ce2-571c-a6b4-f06e176ed1f6
+		summarizeBy: none
+		sourceColumn: week_start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Day of Week Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: da01e546-9433-5403-a11c-a59177f58cc6
+		summarizeBy: none
+		sourceColumn: day_of_week
+
+	column 'Day Name'
+		dataType: string
+		lineageTag: 50fbffbe-623b-5d7a-a868-48bcb40b0a8b
+		summarizeBy: none
+		sourceColumn: day_name_it
+		sortByColumn: 'Day of Week Number'
+
+	column 'Is Weekend'
+		dataType: boolean
+		lineageTag: 5bf695a1-00ab-52a4-8374-64a87619d3bf
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+	/// Italian national holidays plus 29 June (Saints Peter and Paul, Rome).
+	column 'Is Public Holiday'
+		dataType: boolean
+		lineageTag: 0795ccdb-d750-5aeb-861e-bd726b64bdb0
+		summarizeBy: none
+		sourceColumn: is_public_holiday
+
+	hierarchy Calendar
+		lineageTag: fcee97bd-2d6b-5a24-a251-ab985e079417
+
+		level Year
+			lineageTag: b538bb70-92dc-58f1-a92c-0844b1e1ee43
+			column: Year
+
+		level Quarter
+			lineageTag: 5e3cc132-e647-540f-a45a-d934aeaa6ea9
+			column: Quarter
+
+		level 'Month Name'
+			lineageTag: 5c4eaa3c-1308-555b-b6da-f531de51adaf
+			column: 'Month Name'
+
+		level Date
+			lineageTag: f13e9a00-9923-5e01-8fa5-f3f079f20d06
+			column: Date
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "dim_date", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"date_key", "date", "year", "quarter", "month", "month_start", "year_month", "month_name_it", "iso_week", "week_start", "day_of_week", "day_name_it", "is_weekend", "is_public_holiday"})
+				in
+				    Columns

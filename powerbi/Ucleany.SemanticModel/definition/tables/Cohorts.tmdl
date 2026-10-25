@@ -1,0 +1,52 @@
+/// Retention matrix: customers grouped by the month of their first completed booking. City level, not affected by zone filters.
+table Cohorts
+	lineageTag: fc1961bc-7818-5cdd-ad3a-20a58fe14379
+
+	column 'Cohort Month'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: f2fe6e01-6ac1-58e6-947a-7028d6b4cbeb
+		summarizeBy: none
+		sourceColumn: cohort_month
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Months Since First Booking'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1a8a7ca0-6a21-5e56-b2c1-201285bcbf9d
+		summarizeBy: none
+		sourceColumn: months_since_first
+
+	column 'Cohort Size Qty'
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 9974e137-3a97-5f35-97da-1118370f9b65
+		summarizeBy: none
+		sourceColumn: cohort_size
+
+	column 'Active Customers Qty'
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: d3b217ee-32b5-57ac-af28-b37af3e35a77
+		summarizeBy: sum
+		sourceColumn: active_customers
+
+	column 'GMV EUR'
+		dataType: decimal
+		isHidden
+		formatString: "€"#,0.00
+		lineageTag: 52167ce9-7a47-52e1-8aef-c95b5e8b54be
+		summarizeBy: sum
+		sourceColumn: gmv_eur
+
+	partition Cohorts = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "agg_customer_cohorts", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"cohort_month", "months_since_first", "cohort_size", "active_customers", "gmv_eur"})
+				in
+				    Columns

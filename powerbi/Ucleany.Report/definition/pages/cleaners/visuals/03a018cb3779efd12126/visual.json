@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "03a018cb3779efd12126",
+  "position": {
+    "x": 1022.4,
+    "y": 92,
+    "z": 0,
+    "height": 96,
+    "width": 233.6,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Detractor Share"
+                }
+              },
+              "queryRef": "Metrics.Detractor Share",
+              "nativeQueryRef": "Detractor Share"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

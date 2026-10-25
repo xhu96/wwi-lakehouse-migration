@@ -1,0 +1,73 @@
+/// One row per valid review. Ratings outside 1-5 from before the July 2026 app release are quarantined in silver and never reach this table.
+table Reviews
+	lineageTag: b4f00070-1867-514a-b013-fbe5952be1d9
+
+	column 'Review ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: d33df2e5-ebd2-51e3-b939-e7f4b1669da6
+		summarizeBy: none
+		sourceColumn: review_id
+
+	column 'Service Date'
+		dataType: dateTime
+		isHidden
+		formatString: dd mmm yyyy
+		lineageTag: 1f96f872-679a-50bb-b4e3-69b8c8317ceb
+		summarizeBy: none
+		sourceColumn: service_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Cleaner SK'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5ddc85f9-e483-573a-a2ab-6c1d76c5b43d
+		summarizeBy: none
+		sourceColumn: cleaner_sk
+
+	column 'Zone ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 534805e0-415e-5a17-9246-d8a7385ab66c
+		summarizeBy: none
+		sourceColumn: zone_id
+
+	column 'Service ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 35b0d67b-4b8f-5a30-a948-bc29bb1e56b9
+		summarizeBy: none
+		sourceColumn: service_id
+
+	column Rating
+		dataType: int64
+		formatString: 0
+		lineageTag: de808dca-89fb-5a0c-a112-8775f2e610bd
+		summarizeBy: none
+		sourceColumn: rating
+
+	column 'Is Detractor'
+		dataType: boolean
+		isHidden
+		lineageTag: a1d8ca61-f1bc-50bc-a86d-9082a71e1de9
+		summarizeBy: none
+		sourceColumn: is_detractor
+
+	column 'Has Comment'
+		dataType: boolean
+		lineageTag: 81afa9df-bf7a-5e8e-bb32-8bb9b604079a
+		summarizeBy: none
+		sourceColumn: has_comment
+
+	partition Reviews = m
+		mode: import
+		source =
+				let
+				    Source = Gold{[Name = "fct_reviews", Kind = "Table"]}[Data],
+				    Columns = Table.SelectColumns(Source, {"review_id", "service_date", "cleaner_sk", "zone_id", "service_id", "rating", "is_detractor", "has_comment"})
+				in
+				    Columns
