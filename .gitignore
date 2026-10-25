@@ -21,3 +21,7 @@ build/
 .vscode/
 .idea/
 .DS_Store
+
+# .NET (tools/model-check)
+bin/
+obj/

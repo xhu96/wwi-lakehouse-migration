@@ -58,10 +58,23 @@ jobs:
       - name: Committed baseline must match what SQL Server produced
         run: diff -r legacy/report_snapshots /tmp/legacy_snapshots
 
+  semantic-model:
+    name: Load the Power BI model with TOM and check modelling rules and report fields
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - run: >-
+          dotnet run --project tools/model-check -c Release --
+          powerbi/Ucleany.SemanticModel/definition
+          --report powerbi/Ucleany.Report/definition
+
   bundle:
     name: Validate and deploy the Databricks bundle
     runs-on: ubuntu-latest
-    needs: [test, legacy-baseline]
+    needs: [test, legacy-baseline, semantic-model]
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
