@@ -2,8 +2,8 @@
 
 import pytest
 
-from conftest import SNAPSHOTS
-from ucleany import reconcile
+from conftest import ROOT, SNAPSHOTS
+from ucleany import governance, reconcile, sql
 from ucleany.local_runner import LOCAL_CATALOG, build_gold, build_silver
 from ucleany.synth.landing import write_landing
 
@@ -59,8 +59,20 @@ def test_invalid_ratings_quarantined(lakehouse, dataset):
 def test_gold_has_no_test_accounts_or_personal_data(lakehouse, dataset):
     test_ids = ",".join(str(i) for i in dataset.truth["test_customer_ids"])
     assert lakehouse.sql(f"SELECT count(*) FROM gold.fct_bookings WHERE customer_id IN ({test_ids})").first()[0] == 0
-    cols = set(lakehouse.table("gold.dim_customer").columns)
-    assert not cols & {"first_name", "last_name", "email", "email_raw", "phone_e164"}
+    personal = governance.personal_columns(governance.load_policy(ROOT / "governance" / "policy.yml"))
+    for model in sql.GOLD_MODELS:
+        assert not set(lakehouse.table(f"gold.{model}").columns) & personal, model
+
+
+def test_policy_covers_real_columns(lakehouse, dataset):
+    """Every column the policy tags or masks exists, so a rename cannot silently drop a mask."""
+    policy = governance.load_policy(ROOT / "governance" / "policy.yml")
+    for table, columns in policy["personal_data"]["columns"].items():
+        layer, name = table.split(".")
+        actual = set(dataset.changes[name].columns) if layer == "bronze" else set(lakehouse.table(table).columns)
+        assert set(columns) <= actual, f"{table}: {set(columns) - actual}"
+    for table, column in policy["row_filters"]["tables"].items():
+        assert column in lakehouse.table(table).columns
 
 
 def test_every_fact_row_finds_its_dimension_versions(lakehouse):

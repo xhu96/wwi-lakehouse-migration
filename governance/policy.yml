@@ -1,0 +1,92 @@
+# Who can see what in the Ucleany lakehouse.
+#
+# This file is the only place access is defined. The governance task of
+# ucleany_lakehouse_job turns it into Unity Catalog grants, tags, column masks and
+# row filters after every pipeline update (src/ucleany/governance.py), and the
+# Power BI model reads the same zone assignments for its row-level security.
+# Change access with a pull request, not in Catalog Explorer.
+
+groups:
+  engineers: ucleany-data-engineers      # build and run the platform; the job runs as a member
+  analysts: ucleany-analysts             # self-service analysis: gold, plus silver without personal data
+  leadership: ucleany-leadership         # founders and finance: gold, every zone
+  zone_managers: ucleany-zone-managers   # gold, only the zones assigned below
+  customer_care: ucleany-customer-care   # silver with contact details, to handle complaints
+  powerbi: ucleany-powerbi               # identity of the Power BI refresh
+
+grants:
+  catalog:
+    engineers: [ALL PRIVILEGES]
+    analysts: [USE CATALOG]
+    leadership: [USE CATALOG]
+    zone_managers: [USE CATALOG]
+    customer_care: [USE CATALOG]
+    powerbi: [USE CATALOG]
+  schemas:
+    # landing and bronze hold raw personal data: engineers only (catalog grant above).
+    silver:
+      analysts: [USE SCHEMA, SELECT]
+      customer_care: [USE SCHEMA, SELECT]
+    gold:
+      analysts: [USE SCHEMA, SELECT]
+      leadership: [USE SCHEMA, SELECT]
+      zone_managers: [USE SCHEMA, SELECT]
+      powerbi: [USE SCHEMA, SELECT]
+    governance:
+      powerbi: [USE SCHEMA, SELECT]
+
+schema_tags:
+  landing: {layer: landing, contains_pii: "true"}
+  bronze: {layer: bronze, contains_pii: "true"}
+  silver: {layer: silver, contains_pii: "true"}
+  gold: {layer: gold, contains_pii: "false"}
+  governance: {layer: governance, contains_pii: "true"}
+
+# Personal data, column by column. Every listed column gets the tag pii=<class>.
+# Columns with a mask are shown in clear only to the unmasked_for groups.
+personal_data:
+  unmasked_for: [engineers, customer_care]
+  columns:
+    bronze.customers:
+      first_name: {pii: name}
+      last_name: {pii: name}
+      email: {pii: email}
+      phone: {pii: phone}
+    bronze.cleaners:
+      first_name: {pii: name}
+      last_name: {pii: name}
+      email: {pii: email}
+      phone: {pii: phone}
+    bronze.reviews:
+      comment: {pii: free_text}
+    silver.customers:
+      first_name: {pii: name, mask: name}
+      last_name: {pii: name, mask: name}
+      email_raw: {pii: email, mask: email}
+      email: {pii: email, mask: email}
+      phone_e164: {pii: phone, mask: phone}
+      email_hash: {pii: pseudonymous}
+    silver.cleaners:
+      first_name: {pii: name, mask: name}
+      last_name: {pii: name, mask: name}
+      email: {pii: email, mask: email}
+      phone_e164: {pii: phone, mask: phone}
+    silver.reviews:
+      comment: {pii: free_text, mask: free_text}
+
+# Zone managers see only their zones in gold. Everyone in all_zones sees every row.
+row_filters:
+  all_zones: [engineers, leadership, analysts, powerbi]
+  tables:
+    gold.fct_bookings: zone_id
+    gold.fct_payments: zone_id
+    gold.fct_reviews: zone_id
+
+# Loaded into governance.zone_access. Placeholder identities for the public repo.
+zone_access:
+  - user: manager.centro@ucleany.example
+    zones: [101, 102, 103, 107]     # Centro Storico, Monti, Trastevere, Testaccio
+  - user: manager.nord@ucleany.example
+    zones: [104, 105, 106, 115]     # Prati, Parioli, Flaminio, Nomentano
+  - user: manager.sud-est@ucleany.example
+    zones: [108, 109, 110, 111, 112, 113, 114, 116]

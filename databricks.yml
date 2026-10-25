@@ -11,6 +11,9 @@ variables:
   catalog:
     description: Unity Catalog catalog that holds the landing volume and the bronze, silver and gold schemas.
     default: ucleany_dev
+  governance_strict:
+    description: "true fails the job when a group in governance/policy.yml does not exist; false skips its grants."
+    default: "false"
 
 targets:
   dev:
@@ -23,6 +26,7 @@ targets:
     mode: production
     variables:
       catalog: ucleany_prod
+      governance_strict: "true"
     workspace:
       root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
     run_as:

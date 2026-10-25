@@ -8,7 +8,7 @@ The legacy reports were run by anyone with database access, so names, emails and
 
 ## Decision
 
-- Personal data (names, emails, phones) stays in `silver`, which is restricted to data engineers.
+- Personal data (names, emails, phones, free-text comments) stays in `silver`.
 - Gold carries only what analysis needs: email domain, segment, zone, signup date. Cleaners appear with a display name (first name and initial) because operations reviews them by name.
 - Erased customers keep their history for revenue and retention, with no identifiers.
 
@@ -16,4 +16,4 @@ The legacy reports were run by anyone with database access, so names, emails and
 
 - Gold can be granted to all analysts and to Power BI service principals without masking rules.
 - Use cases that need contact details (marketing exports) read silver through a dedicated, audited path, out of scope for this repository.
-- The next step is to express these grants, plus column masks on silver, as code (see the roadmap).
+- Silver access is enforced with column masks and grants generated from a policy file ([ADR 0006](0006-governance-as-code.md)).
