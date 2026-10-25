@@ -16,7 +16,9 @@ from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
 from .cleansing import (
+    display_name,
     email_domain,
+    email_hash,
     is_erased_email,
     is_test_email,
     local_to_utc,
@@ -67,6 +69,7 @@ def customers(df: DataFrame) -> DataFrame:
         "last_name",
         F.col("email").alias("email_raw"),
         normalize_email(F.col("email")).alias("email"),
+        email_hash(F.col("email")).alias("email_hash"),
         email_domain(F.col("email")).alias("email_domain"),
         normalize_phone(F.col("phone")).alias("phone_e164"),
         F.col("segment"),
@@ -87,6 +90,7 @@ def cleaners(df: DataFrame) -> DataFrame:
         F.col("cleaner_id").cast("int"),
         "first_name",
         "last_name",
+        display_name(F.col("first_name"), F.col("last_name")).alias("display_name"),
         normalize_email(F.col("email")).alias("email"),
         normalize_phone(F.col("phone")).alias("phone_e164"),
         F.col("home_zone_id").cast("int"),

@@ -8,7 +8,7 @@ WITH versions AS (
 SELECT
     xxhash64(v.cleaner_id, v.__START_AT) AS cleaner_sk,
     v.cleaner_id,
-    concat(v.first_name, ' ', left(v.last_name, 1), '.') AS cleaner_display_name,
+    v.display_name AS cleaner_display_name,
     v.home_zone_id AS zone_id,
     z.zone_name,
     v.contract_type,

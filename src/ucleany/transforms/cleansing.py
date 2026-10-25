@@ -18,6 +18,16 @@ def email_domain(col: Column) -> Column:
     return F.substring_index(normalize_email(col), "@", -1)
 
 
+def email_hash(col: Column) -> Column:
+    """Pseudonymous key for matching people across accounts without reading the email itself."""
+    return F.sha2(normalize_email(col), 256)
+
+
+def display_name(first: Column, last: Column) -> Column:
+    """First name and initial, as the app shows cleaners to customers."""
+    return F.concat(first, F.lit(" "), F.substring(last, 1, 1), F.lit("."))
+
+
 def normalize_phone(col: Column) -> Column:
     """Italian mobile numbers to E.164 (+393xxxxxxxxx); anything else to NULL."""
     digits = F.regexp_replace(col, r"[^0-9]", "")
